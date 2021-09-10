@@ -8,6 +8,7 @@ public class CARLOS implements MNKPlayer{
 	private MNKGameState myWin;
 	private MNKGameState yourWin;
 	private int TIMEOUT;
+	long start;
 	
 	public CARLOS(){
 		
@@ -49,25 +50,27 @@ public class CARLOS implements MNKPlayer{
 	
 	MNKBoard Copy(MNKBoard board)
 	{
-		MNKBoard cBoard=new MNKBoard(board.M, board.N, board.K);
+		/*MNKBoard cBoard=new MNKBoard(board.M, board.N, board.K);
 		
 		for(MNKCell c : board.getMarkedCells())
 		{
 			cBoard.markCell(c.i, c.j);
 		}
 				
-		return cBoard;
+		return cBoard;*/
+		return board;
 	}
 	
 	public MNKCell BestMove(MNKBoard board, MNKCell[] FC)
 	{
+		start = System.currentTimeMillis();
 		int bestScore=Integer.MIN_VALUE;
 		MNKCell bestMove=FC[0];
 		
 		for(MNKCell c : board.getFreeCells())
 		{
 			board.markCell(c.i, c.j);
-			int score=MiniMax(Copy(board), 100, false);
+			int score=MiniMax(Copy(board), 3, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			
 			//System.out.println("Carlos "+c.i+"-"+c.j+" "+score);
 			
@@ -78,14 +81,20 @@ public class CARLOS implements MNKPlayer{
 				bestMove=c;
 			}
 			board.unmarkCell();
+			
+			if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0))
+				break;
 		}
 		
 		System.out.println();
 		return bestMove;
 	}
 	
-	public int MiniMax(MNKBoard board, int depth, boolean isMax)
+	public int MiniMax(MNKBoard board, int depth, boolean isMax, int alpha, int beta)
 	{
+		if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(90.0/100.0))
+			return 0;
+		
 		if(depth<=0)
 			return 0;
 		
@@ -109,8 +118,13 @@ public class CARLOS implements MNKPlayer{
 			for(MNKCell c : board.getFreeCells())
 			{
 				board.markCell(c.i, c.j);
-				maxScore=Math.max(maxScore, MiniMax(Copy(board), depth-1, false));
+				maxScore=Math.max(maxScore, MiniMax(Copy(board), depth-1, false, alpha, beta));
 				board.unmarkCell();
+				
+				alpha = Math.max( alpha, maxScore);
+			    
+				if(beta <= alpha)
+					break;
 			}
 			
 			return maxScore;			
@@ -122,8 +136,12 @@ public class CARLOS implements MNKPlayer{
 			for(MNKCell c : board.getFreeCells())
 			{
 				board.markCell(c.i, c.j);
-				minScore=Math.min(minScore, MiniMax(Copy(board), depth-1, true));
+				minScore=Math.min(minScore, MiniMax(Copy(board), depth-1, true, alpha, beta));
 				board.unmarkCell();
+				
+				beta = Math.min( beta, minScore);
+			    if(beta <= alpha)
+			    	break;
 			}
 			
 			return minScore;

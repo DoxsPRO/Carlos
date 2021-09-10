@@ -317,8 +317,8 @@ public class MNKPlayerTester {
 				case WINP2: P2SCORE += WINP2SCORE; break;
 				case ERRP1: P2SCORE += ERRSCORE;   break;
 				case ERRP2: P1SCORE += ERRSCORE;   break;
-				case DRAW : P1SCORE += DRAWSCORE;
-				            P2SCORE += DRAWSCORE;
+				case DRAW : /*P1SCORE += DRAWSCORE;
+				            P2SCORE += DRAWSCORE;*/
 				            break;
 			}
 			if(VERBOSE) {
