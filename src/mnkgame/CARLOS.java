@@ -39,15 +39,96 @@ public class CARLOS implements MNKPlayer{
 		int pos   = rand.nextInt(FC.length); 
 		MNKCell c = FC[pos]; // random move
 		
-		//MiniMax
+		c=BestMove(B, FC);
+		
+		B.markCell(c.i, c.j);
 		
 		// No win or loss, return the randomly selected move
 		return c;
 	}
 	
-	public int MiniMax()
+	MNKBoard Copy(MNKBoard board)
 	{
-		return 0;
+		MNKBoard cBoard=new MNKBoard(board.M, board.N, board.K);
+		
+		for(MNKCell c : board.getMarkedCells())
+		{
+			cBoard.markCell(c.i, c.j);
+		}
+				
+		return cBoard;
+	}
+	
+	public MNKCell BestMove(MNKBoard board, MNKCell[] FC)
+	{
+		int bestScore=Integer.MIN_VALUE;
+		MNKCell bestMove=FC[0];
+		
+		for(MNKCell c : board.getFreeCells())
+		{
+			board.markCell(c.i, c.j);
+			int score=MiniMax(Copy(board), 100, false);
+			
+			//System.out.println("Carlos "+c.i+"-"+c.j+" "+score);
+			
+			
+			if(score>bestScore)
+			{
+				bestScore=score;
+				bestMove=c;
+			}
+			board.unmarkCell();
+		}
+		
+		System.out.println();
+		return bestMove;
+	}
+	
+	public int MiniMax(MNKBoard board, int depth, boolean isMax)
+	{
+		if(depth<=0)
+			return 0;
+		
+		if(board.gameState()==myWin)
+		{
+			return 10;
+		}
+		else if(board.gameState()==yourWin)
+		{
+			return -10;
+		}
+		else if(board.gameState()==MNKGameState.DRAW)
+		{
+			return 0;
+		}
+		
+		if(isMax)
+		{
+			int maxScore=Integer.MIN_VALUE;
+			
+			for(MNKCell c : board.getFreeCells())
+			{
+				board.markCell(c.i, c.j);
+				maxScore=Math.max(maxScore, MiniMax(Copy(board), depth-1, false));
+				board.unmarkCell();
+			}
+			
+			return maxScore;			
+		}
+		else
+		{
+			int minScore=Integer.MAX_VALUE;
+			
+			for(MNKCell c : board.getFreeCells())
+			{
+				board.markCell(c.i, c.j);
+				minScore=Math.min(minScore, MiniMax(Copy(board), depth-1, true));
+				board.unmarkCell();
+			}
+			
+			return minScore;
+		}
+		
 	}
 	
 	

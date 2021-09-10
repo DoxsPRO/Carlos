@@ -77,6 +77,7 @@ public class QuasiRandomPlayer implements MNKPlayer {
 			if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0)) {
 				MNKCell c = FC[rand.nextInt(FC.length)];
 				B.markCell(c.i,c.j);
+				
 				return c;
 			} else if(B.markCell(d.i,d.j) == myWin) {
 				return d;  
