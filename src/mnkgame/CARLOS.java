@@ -1,3 +1,11 @@
+/* C.A.R.L.O.S.
+ * Computer Advanced Random Logic Operating System
+ * 
+ * Creato da
+ * Capone Orazio Andrea	MAT 0000987364
+ * Ciancio Domenico 	MAT 0000987367
+ */
+
 package mnkgame;
 
 import java.util.Random;
@@ -17,7 +25,6 @@ public class CARLOS implements MNKPlayer{
 	}
 	
 	public void initPlayer(int M, int N, int K, boolean first, int timeout_in_secs) {
-		// New random seed for each game
 		B       = new MNKBoard(M,N,K);
 		myWin   = first ? MNKGameState.WINP1 : MNKGameState.WINP2; 
 		yourWin = first ? MNKGameState.WINP2 : MNKGameState.WINP1;
@@ -36,27 +43,13 @@ public class CARLOS implements MNKPlayer{
 		if(FC.length == 1)
 			return FC[0];
 
-		MNKCell c = BestMove(B, FC);
+		MNKCell c = BestMove(B, FC); //Select best move
 		
 		B.markCell(c.i, c.j);
 
 		return c;
 	}
 	
-	MNKBoard Copy(MNKBoard board)
-	{
-		//crea una copia della board
-		
-		/*MNKBoard cBoard=new MNKBoard(board.M, board.N, board.K);
-		
-		for(MNKCell c : board.getMarkedCells())
-		{
-			cBoard.markCell(c.i, c.j);
-		}
-				
-		return cBoard;*/
-		return board;
-	}
 	
 	public MNKCell BestMove(MNKBoard board, MNKCell[] FC)
 	{
@@ -65,13 +58,11 @@ public class CARLOS implements MNKPlayer{
 		MNKCell bestMove=FC[0];
 		
 		
-		//Per ogni cella libera verifica la mossa migliore
+		//Per ogni cella libera verifica la mossa migliore tramite minimax
 		for(MNKCell c : board.getFreeCells())
 		{
 			board.markCell(c.i, c.j);
-			int score=MiniMax(Copy(board), 3, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
-			
-			//System.out.println("Carlos "+c.i+"-"+c.j+" "+score);
+			int score=MiniMax(board, 3, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
 			
 			if(score>bestScore)
 			{
@@ -80,6 +71,7 @@ public class CARLOS implements MNKPlayer{
 			}
 			board.unmarkCell();
 			
+			//se il tempo sta finendo interrompe il ciclo
 			if((System.currentTimeMillis()-start)/1000.0 > TIMEOUT*(99.0/100.0))
 				break;
 		}
@@ -117,7 +109,7 @@ public class CARLOS implements MNKPlayer{
 			for(MNKCell c : board.getFreeCells())
 			{
 				board.markCell(c.i, c.j);
-				maxScore=Math.max(maxScore, MiniMax(Copy(board), depth-1, false, alpha, beta));
+				maxScore=Math.max(maxScore, MiniMax(board, depth-1, false, alpha, beta));
 				board.unmarkCell();
 				
 				alpha = Math.max( alpha, maxScore);
@@ -134,7 +126,7 @@ public class CARLOS implements MNKPlayer{
 			for(MNKCell c : board.getFreeCells())
 			{
 				board.markCell(c.i, c.j);
-				minScore=Math.min(minScore, MiniMax(Copy(board), depth-1, true, alpha, beta));
+				minScore=Math.min(minScore, MiniMax(board, depth-1, true, alpha, beta));
 				board.unmarkCell();
 				
 				beta = Math.min( beta, minScore);
